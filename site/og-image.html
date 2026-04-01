@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+    background: #0D0B09;
+    font-family: 'IBM Plex Mono', monospace;
+    position: relative;
+  }
+  .bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 80% at 15% 85%, rgba(232,101,43,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 50% at 85% 20%, rgba(255,138,71,0.06) 0%, transparent 50%);
+  }
+  .grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(138,126,114,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(138,126,114,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 60% 70% at 50% 50%, black, transparent);
+  }
+  .content {
+    position: relative;
+    z-index: 1;
+    padding: 72px 80px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .label {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #E8652B;
+  }
+  .title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 128px;
+    font-weight: 400;
+    color: #F5F0E8;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-top: 16px;
+  }
+  .title .accent {
+    color: #FF6B2B;
+  }
+  .subtitle {
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: #8A7E72;
+    max-width: 620px;
+    margin-top: 20px;
+  }
+  .subtitle strong {
+    color: #E8E0D4;
+    font-weight: 500;
+  }
+  .bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .stats {
+    display: flex;
+    gap: 48px;
+  }
+  .stat-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: #FF8A47;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #6B6560;
+    margin-top: 4px;
+  }
+  .badge {
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: #6B6560;
+    border: 1px solid rgba(138,126,114,0.15);
+    padding: 8px 16px;
+    border-radius: 3px;
+  }
+  .badge code {
+    color: #E8652B;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  /* Decorative sparks */
+  .spark {
+    position: absolute;
+    border-radius: 50%;
+  }
+  .spark-1 { width: 6px; height: 6px; background: #FFD4A0; left: 60px; bottom: 180px; box-shadow: 0 0 16px rgba(255,212,160,0.4); }
+  .spark-2 { width: 4px; height: 4px; background: #FFA035; left: 90px; bottom: 220px; opacity: 0.7; box-shadow: 0 0 12px rgba(255,160,53,0.3); }
+  .spark-3 { width: 3px; height: 3px; background: #FF8A47; left: 40px; bottom: 250px; opacity: 0.5; box-shadow: 0 0 8px rgba(255,138,71,0.3); }
+  .spark-4 { width: 5px; height: 5px; background: #FFD4A0; left: 110px; bottom: 160px; opacity: 0.6; box-shadow: 0 0 14px rgba(255,212,160,0.35); }
+  .spark-5 { width: 2px; height: 2px; background: #FFA035; left: 70px; bottom: 290px; opacity: 0.4; }
+</style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="grid"></div>
+  <div class="spark spark-1"></div>
+  <div class="spark spark-2"></div>
+  <div class="spark spark-3"></div>
+  <div class="spark spark-4"></div>
+  <div class="spark spark-5"></div>
+  <div class="content">
+    <div>
+      <div class="label">Claude Code Skill</div>
+      <div class="title"><span class="accent">Forge</span></div>
+      <div class="subtitle">
+        Design <strong>multi-agent systems</strong> that sustain quality
+        over hours of autonomous work.
+      </div>
+    </div>
+    <div class="bottom">
+      <div class="stats">
+        <div><div class="stat-value">3</div><div class="stat-label">Architecture patterns</div></div>
+        <div><div class="stat-value">9</div><div class="stat-label">Workflow steps</div></div>
+        <div><div class="stat-value">6</div><div class="stat-label">Research sources</div></div>
+      </div>
+      <div class="badge">
+        <code>/forge</code> &middot; omegalens/forge
+      </div>
+    </div>
+  </div>
+</body>
+</html>
