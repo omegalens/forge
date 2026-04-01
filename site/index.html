@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forge — Multi-Agent Systems for Autonomous Work</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --ember: #E8652B;
+    --ember-bright: #FF8A47;
+    --ember-glow: #FF6B2B;
+    --molten: #FFA035;
+    --heat: #FFD4A0;
+    --ash: #1A1714;
+    --char: #0D0B09;
+    --smoke: #2A2520;
+    --warm-gray: #8A7E72;
+    --cool-gray: #6B6560;
+    --bone: #E8E0D4;
+    --cream: #F5F0E8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ember) var(--char);
+  }
+
+  body {
+    background: var(--char);
+    color: var(--bone);
+    font-family: 'IBM Plex Mono', monospace;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ═══════ HERO ═══════ */
+
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 6rem 4rem;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 80%, rgba(232,101,43,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255,138,71,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(138,126,114,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(138,126,114,0.03) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black, transparent);
+  }
+
+  .hero-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ember);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease-out 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(4rem, 10vw, 9rem);
+    font-weight: 400;
+    line-height: 0.95;
+    color: var(--cream);
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease-out 0.4s forwards;
+  }
+
+  .hero-title .accent {
+    color: var(--ember-glow);
+    position: relative;
+    display: inline-block;
+  }
+
+  .hero-title .accent::after {
+    content: '';
+    position: absolute;
+    bottom: 0.08em;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--ember), var(--molten), transparent);
+    border-radius: 2px;
+  }
+
+  .hero-subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: clamp(1rem, 1.8vw, 1.25rem);
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--warm-gray);
+    max-width: 38em;
+    opacity: 0;
+    animation: fadeUp 0.8s ease-out 0.6s forwards;
+  }
+
+  .hero-subtitle strong {
+    color: var(--bone);
+    font-weight: 500;
+  }
+
+  .hero-stat-row {
+    display: flex;
+    gap: 4rem;
+    margin-top: 4rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease-out 0.8s forwards;
+  }
+
+  .hero-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .hero-stat-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.5rem;
+    color: var(--ember-bright);
+    line-height: 1;
+  }
+
+  .hero-stat-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cool-gray);
+  }
+
+  /* ═══════ SPARK CANVAS ═══════ */
+
+  #spark-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hero, section, footer {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ═══════ INSTALL ═══════ */
+
+  .install {
+    padding: 4rem;
+    border-top: 1px solid rgba(138,126,114,0.1);
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .install-cmd {
+    flex: 1;
+    min-width: 300px;
+    background: var(--ash);
+    border: 1px solid rgba(138,126,114,0.1);
+    border-radius: 4px;
+    padding: 1.5rem 2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--bone);
+    position: relative;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .install-cmd .prompt {
+    color: var(--ember);
+    user-select: none;
+  }
+
+  .install-cmd .comment {
+    color: var(--cool-gray);
+  }
+
+  .install-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 1.6rem;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.25s ease;
+  }
+
+  .btn-primary {
+    background: var(--ember);
+    color: var(--char);
+  }
+
+  .btn-primary:hover {
+    background: var(--ember-bright);
+    box-shadow: 0 0 24px rgba(232,101,43,0.3);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--bone);
+    border: 1px solid rgba(138,126,114,0.2);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--ember);
+    color: var(--ember-bright);
+  }
+
+  .btn svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+
+  /* ═══════ FOUNDATIONAL INSIGHT ═══════ */
+
+  .insight {
+    padding: 8rem 4rem;
+    border-top: 1px solid rgba(138,126,114,0.1);
+    position: relative;
+  }
+
+  .insight-inner {
+    max-width: 48rem;
+  }
+
+  .insight blockquote {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--cream);
+    border-left: 3px solid var(--ember);
+    padding-left: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .insight .attribution {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--cool-gray);
+    padding-left: 2rem;
+  }
+
+  .insight .attribution a {
+    color: var(--ember);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(232,101,43,0.3);
+    transition: border-color 0.2s;
+  }
+
+  .insight .attribution a:hover {
+    border-color: var(--ember);
+  }
+
+  /* ═══════ SECTION STYLES ═══════ */
+
+  section {
+    padding: 6rem 4rem;
+    border-top: 1px solid rgba(138,126,114,0.08);
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ember);
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--cream);
+    margin-bottom: 1rem;
+    line-height: 1.15;
+  }
+
+  .section-desc {
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: var(--warm-gray);
+    max-width: 42em;
+    margin-bottom: 3rem;
+  }
+
+  /* ═══════ ARCHITECTURE CARDS ═══════ */
+
+  .arch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5px;
+    background: rgba(138,126,114,0.08);
+    border: 1px solid rgba(138,126,114,0.08);
+    margin-top: 2rem;
+  }
+
+  .arch-card {
+    background: var(--char);
+    padding: 2.5rem;
+    transition: background 0.4s ease;
+    position: relative;
+  }
+
+  .arch-card:hover {
+    background: var(--ash);
+  }
+
+  .arch-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--ember), transparent);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .arch-card:hover::before {
+    opacity: 1;
+  }
+
+  .arch-card-agents {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+  }
+
+  .arch-card-pattern {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ember);
+    margin-bottom: 1.2rem;
+  }
+
+  .arch-card-desc {
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--warm-gray);
+    margin-bottom: 1.5rem;
+  }
+
+  .arch-card-when {
+    font-size: 0.7rem;
+    color: var(--cool-gray);
+    padding-top: 1rem;
+    border-top: 1px solid rgba(138,126,114,0.08);
+  }
+
+  .arch-card-when strong {
+    color: var(--bone);
+    font-weight: 500;
+  }
+
+  /* ═══════ WORKFLOW ═══════ */
+
+  .workflow-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+    counter-reset: step;
+  }
+
+  .workflow-step {
+    counter-increment: step;
+    position: relative;
+    padding-top: 3rem;
+  }
+
+  .workflow-step::before {
+    content: counter(step, decimal-leading-zero);
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.5rem;
+    color: rgba(232,101,43,0.15);
+    position: absolute;
+    top: 0;
+    left: 0;
+    line-height: 1;
+  }
+
+  .workflow-step h3 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 0.7rem;
+    letter-spacing: 0.05em;
+  }
+
+  .workflow-step p {
+    font-size: 0.75rem;
+    line-height: 1.7;
+    color: var(--cool-gray);
+  }
+
+  /* ═══════ RESULTS ═══════ */
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5px;
+    background: rgba(138,126,114,0.08);
+    border: 1px solid rgba(138,126,114,0.08);
+    margin-top: 2rem;
+  }
+
+  .result-card {
+    background: var(--char);
+    padding: 2.5rem;
+  }
+
+  .result-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--cool-gray);
+    margin-bottom: 0.5rem;
+  }
+
+  .result-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.2rem;
+    color: var(--cream);
+    margin-bottom: 0.3rem;
+  }
+
+  .result-value .unit {
+    font-size: 0.9rem;
+    color: var(--warm-gray);
+  }
+
+  .result-context {
+    font-size: 0.7rem;
+    color: var(--warm-gray);
+    line-height: 1.6;
+  }
+
+  .result-card.highlight {
+    background: var(--ash);
+  }
+
+  .result-card.highlight .result-value {
+    color: var(--ember-bright);
+  }
+
+  /* ═══════ SOURCES ═══════ */
+
+  .sources-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5px;
+    background: rgba(138,126,114,0.06);
+    border: 1px solid rgba(138,126,114,0.08);
+    margin-top: 2rem;
+  }
+
+  .source-item {
+    background: var(--char);
+    padding: 2rem 2.5rem;
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    gap: 1.5rem;
+    align-items: start;
+    transition: background 0.3s ease;
+  }
+
+  .source-item:hover {
+    background: var(--ash);
+  }
+
+  .source-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    color: rgba(232,101,43,0.3);
+    line-height: 1;
+    padding-top: 0.15rem;
+  }
+
+  .source-content h4 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 0.4rem;
+    line-height: 1.4;
+  }
+
+  .source-content h4 a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(232,200,180,0.2);
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .source-content h4 a:hover {
+    color: var(--ember-bright);
+    border-color: var(--ember);
+  }
+
+  .source-meta {
+    font-size: 0.7rem;
+    color: var(--cool-gray);
+    margin-bottom: 0.5rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .source-meta .author { color: var(--warm-gray); }
+  .source-meta .venue { color: var(--ember); font-weight: 500; letter-spacing: 0.05em; }
+
+  .source-desc {
+    font-size: 0.75rem;
+    line-height: 1.7;
+    color: var(--warm-gray);
+  }
+
+  .source-tag {
+    display: inline-block;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid rgba(232,101,43,0.2);
+    color: var(--ember);
+    border-radius: 2px;
+    margin-top: 0.8rem;
+  }
+
+  /* ═══════ EVOLUTION TIMELINE ═══════ */
+
+  .timeline {
+    margin-top: 2rem;
+    position: relative;
+    padding-left: 2rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--ember), rgba(232,101,43,0.1));
+  }
+
+  .timeline-entry {
+    position: relative;
+    padding: 0 0 3rem 2rem;
+  }
+
+  .timeline-entry::before {
+    content: '';
+    position: absolute;
+    left: -2.35rem;
+    top: 0.4rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ember);
+    box-shadow: 0 0 12px rgba(232,101,43,0.4);
+  }
+
+  .timeline-date {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ember);
+    margin-bottom: 0.5rem;
+  }
+
+  .timeline-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+  }
+
+  .timeline-desc {
+    font-size: 0.75rem;
+    line-height: 1.7;
+    color: var(--warm-gray);
+  }
+
+  /* ═══════ FOOTER ═══════ */
+
+  footer {
+    padding: 4rem;
+    border-top: 1px solid rgba(138,126,114,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  footer .colophon {
+    font-size: 0.65rem;
+    color: var(--cool-gray);
+    letter-spacing: 0.1em;
+  }
+
+  footer .colophon a {
+    color: var(--ember);
+    text-decoration: none;
+  }
+
+  footer .version {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(138,126,114,0.4);
+  }
+
+  /* ═══════ SCROLL ANIMATIONS ═══════ */
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ═══════ RESPONSIVE ═══════ */
+
+  @media (max-width: 768px) {
+    .hero { padding: 4rem 2rem; }
+    section { padding: 4rem 2rem; }
+    .insight { padding: 4rem 2rem; }
+    footer { padding: 3rem 2rem; }
+    .hero-stat-row { flex-direction: column; gap: 2rem; }
+    .results-grid { grid-template-columns: 1fr; }
+    .source-item { grid-template-columns: 1fr; }
+    .source-num { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="spark-canvas"></canvas>
+
+<!-- ═══════ HERO ═══════ -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-label">Claude Code Skill</div>
+  <h1 class="hero-title"><span class="accent">Forge</span></h1>
+  <p class="hero-subtitle">
+    Design <strong>multi-agent systems</strong> that sustain quality over hours of autonomous work.
+    Generator-evaluator loops, sprint contracts, grading criteria, and structured handoffs &mdash;
+    distilled from Anthropic's frontier research into a single, opinionated skill.
+  </p>
+  <div class="hero-stat-row">
+    <div class="hero-stat">
+      <div class="hero-stat-value">3</div>
+      <div class="hero-stat-label">Architecture patterns</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">9</div>
+      <div class="hero-stat-label">Design workflow steps</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">6</div>
+      <div class="hero-stat-label">Research sources</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ INSTALL ═══════ -->
+<section class="install">
+  <div class="install-cmd">
+    <span class="comment"># Install the skill</span><br>
+    <span class="prompt">$</span> git clone https://github.com/omegalens/forge.git ~/.claude/skills/forge
+  </div>
+  <div class="install-actions">
+    <a href="https://github.com/omegalens/forge" class="btn btn-primary">
+      <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      View on GitHub
+    </a>
+    <a href="https://github.com/omegalens/forge#install" class="btn btn-secondary">
+      Install docs
+    </a>
+  </div>
+</section>
+
+<!-- ═══════ FOUNDATIONAL INSIGHT ═══════ -->
+<section class="insight">
+  <div class="insight-inner reveal">
+    <blockquote>
+      Every component in a harness encodes an assumption about what the model can't do on its own.
+      Those assumptions deserve stress-testing &mdash; they may be wrong, and they go stale as models improve.
+    </blockquote>
+    <div class="attribution">
+      The foundational principle of Forge, derived from
+      <a href="https://www.anthropic.com/engineering/harness-design-long-running-apps">Anthropic's harness design research</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ ARCHITECTURES ═══════ -->
+<section>
+  <div class="section-label reveal">Core Patterns</div>
+  <h2 class="section-title reveal">Three architectures, one decision framework</h2>
+  <p class="section-desc reveal">
+    Your failure modes determine your architecture. Forge provides concrete patterns for each,
+    with decision guides, example prompts, and simplification paths as models improve.
+  </p>
+
+  <div class="arch-grid reveal">
+    <div class="arch-card">
+      <div class="arch-card-agents">Two-Agent</div>
+      <div class="arch-card-pattern">Initializer + Worker</div>
+      <div class="arch-card-desc">
+        Structured handoffs between context windows. The initializer expands the prompt into a spec and feature list;
+        the worker implements one feature per session, leaving clean artifacts for the next.
+      </div>
+      <div class="arch-card-when"><strong>Use when:</strong> Context degradation is the bottleneck. Quality within a single session is fine, but work degrades across boundaries.</div>
+    </div>
+
+    <div class="arch-card">
+      <div class="arch-card-agents">Generator-Evaluator</div>
+      <div class="arch-card-pattern">GAN-Inspired Feedback Loop</div>
+      <div class="arch-card-desc">
+        Separating creation from judgment. The generator produces output; a calibrated evaluator grades it against
+        concrete criteria. 5&ndash;15 iterations drive convergence toward quality the generator can't self-assess.
+      </div>
+      <div class="arch-card-when"><strong>Use when:</strong> Output quality is subjective or self-evaluation is unreliable. Design, writing, creative work.</div>
+    </div>
+
+    <div class="arch-card">
+      <div class="arch-card-agents">Three-Agent</div>
+      <div class="arch-card-pattern">Planner + Generator + Evaluator</div>
+      <div class="arch-card-desc">
+        Full-stack autonomous builds. The planner expands a one-sentence prompt into a product spec.
+        Generator and evaluator negotiate sprint contracts before each implementation cycle.
+      </div>
+      <div class="arch-card-when"><strong>Use when:</strong> Both scope management and quality assurance are needed. Complex multi-hour builds.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ WORKFLOW ═══════ -->
+<section>
+  <div class="section-label reveal">The Design Workflow</div>
+  <h2 class="section-title reveal">From naive implementation to refined system</h2>
+  <p class="section-desc reveal">
+    Don't build a three-agent system for a problem a two-agent system solves.
+    Forge guides you through a methodical process: observe failures first, then architect precisely.
+  </p>
+
+  <div class="workflow-steps reveal">
+    <div class="workflow-step">
+      <h3>Identify failure modes</h3>
+      <p>Run a naive implementation. Read its traces. Your harness should address failures you actually observe, not hypothetical ones.</p>
+    </div>
+    <div class="workflow-step">
+      <h3>Choose architecture</h3>
+      <p>Match the pattern to your bottleneck. Context management, quality, or both. Start simple.</p>
+    </div>
+    <div class="workflow-step">
+      <h3>Design grading criteria</h3>
+      <p>The highest-leverage step. Turn "is this good?" into concrete, gradable dimensions weighted toward weakness.</p>
+    </div>
+    <div class="workflow-step">
+      <h3>Design artifacts</h3>
+      <p>Agents communicate through files, not conversation. Specs, sprint contracts, evaluation reports &mdash; all persisted.</p>
+    </div>
+    <div class="workflow-step">
+      <h3>Configure context</h3>
+      <p>Compaction, resets, or neither. Test each new model &mdash; you may not need resets anymore.</p>
+    </div>
+    <div class="workflow-step">
+      <h3>Wire up testing</h3>
+      <p>Give the evaluator interactive tools. Playwright for web apps. Test as a user would, not just compile checks.</p>
+    </div>
+    <div class="workflow-step">
+      <h3>Tune the evaluator</h3>
+      <p>Read its logs, find judgment divergences, update its prompt. 3&ndash;5 rounds until it grades like you would.</p>
+    </div>
+    <div class="workflow-step">
+      <h3>Optimize post-completion</h3>
+      <p>Hand off to autoresearch. The grading criteria become the metric, the feature list becomes the guard.</p>
+    </div>
+    <div class="workflow-step">
+      <h3>Simplify ruthlessly</h3>
+      <p>Remove one component at a time. If quality holds, it wasn't load-bearing. The interesting design space moves, not shrinks.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ RESULTS ═══════ -->
+<section>
+  <div class="section-label reveal">Proven Results</div>
+  <h2 class="section-title reveal">From the research that built this skill</h2>
+  <p class="section-desc reveal">
+    These numbers come directly from Anthropic's published experiments &mdash;
+    the same research that Forge distills into an actionable design workflow.
+  </p>
+
+  <div class="results-grid reveal">
+    <div class="result-card">
+      <div class="result-label">Solo agent</div>
+      <div class="result-value">$9 <span class="unit">/ 20 min</span></div>
+      <div class="result-context">Broken game play. Features half-implemented. Entity wiring disconnected from runtime.</div>
+    </div>
+    <div class="result-card highlight">
+      <div class="result-label">Three-agent harness</div>
+      <div class="result-value">$200 <span class="unit">/ 6 hr</span></div>
+      <div class="result-context">16-feature spec across 10 sprints. Working game play, AI-assisted sprite generation, export with shareable links.</div>
+    </div>
+    <div class="result-card highlight">
+      <div class="result-label">Simplified harness (Opus 4.6)</div>
+      <div class="result-value">$125 <span class="unit">/ 4 hr</span></div>
+      <div class="result-context">Full DAW in browser. 2+ hours of coherent generation without sprint decomposition. Working arrangement, mixer, and AI-driven composition.</div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Generator coherence</div>
+      <div class="result-value">2+ <span class="unit">hours</span></div>
+      <div class="result-context">Opus 4.6 sustained coherent work without context resets &mdash; a capability the harness was originally built to compensate for.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ EVOLUTION ═══════ -->
+<section>
+  <div class="section-label reveal">Evolution</div>
+  <h2 class="section-title reveal">How Forge was built</h2>
+  <p class="section-desc reveal">
+    Not designed in a single pass. Forge evolved through published research, internal experiments,
+    external academic work, and iterative simplification across model generations.
+  </p>
+
+  <div class="timeline reveal">
+    <div class="timeline-entry">
+      <div class="timeline-date">November 2025</div>
+      <div class="timeline-title">Effective Harnesses for Long-Running Agents</div>
+      <div class="timeline-desc">Anthropic publishes the two-agent pattern: initializer + worker with structured handoffs. The foundation &mdash; discrete sessions bridged by persistent artifacts. Demonstrated with Claude Agent SDK.</div>
+    </div>
+    <div class="timeline-entry">
+      <div class="timeline-date">March 2026</div>
+      <div class="timeline-title">Harness Design for Long-Running Application Development</div>
+      <div class="timeline-desc">Prithvi Rajasekaran introduces the generator-evaluator loop inspired by GANs. Grading criteria turn subjective quality into gradable dimensions. Three-agent architecture produces a 16-feature retro game maker autonomously.</div>
+    </div>
+    <div class="timeline-entry">
+      <div class="timeline-date">March 2026</div>
+      <div class="timeline-title">Meta-Harness: End-to-End Optimization</div>
+      <div class="timeline-desc">Lee et al. demonstrate that optimizing the harness itself &mdash; not just the output &mdash; yields larger quality gains. Counterfactual diagnosis across 10M tokens of execution traces. Integrated into Forge as the automated iteration protocol.</div>
+    </div>
+    <div class="timeline-entry">
+      <div class="timeline-date">March 2026</div>
+      <div class="timeline-title">Forge skill created</div>
+      <div class="timeline-desc">All research synthesized into a single Claude Code skill. Architecture patterns, grading criteria guides, optimization handoff protocol, and trace archive convention. Renamed from "harness-design" to "forge" &mdash; April 2026.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ SOURCES ═══════ -->
+<section>
+  <div class="section-label reveal">Research Sources</div>
+  <h2 class="section-title reveal">Standing on shoulders</h2>
+  <p class="section-desc reveal">
+    Every design decision in Forge traces back to published research, documented experiments,
+    or hard-won lessons from production agent systems.
+  </p>
+
+  <ul class="sources-list reveal">
+    <li class="source-item">
+      <div class="source-num">01</div>
+      <div class="source-content">
+        <h4><a href="https://www.anthropic.com/engineering/harness-design-long-running-apps">Harness Design for Long-Running Application Development</a></h4>
+        <div class="source-meta">
+          <span class="author">Prithvi Rajasekaran</span>
+          <span class="venue">Anthropic Labs</span>
+          <span>March 2026</span>
+        </div>
+        <div class="source-desc">
+          The primary source. Introduces the generator-evaluator loop, GAN-inspired architecture, grading criteria design,
+          sprint contracts, and evaluator calibration. Demonstrates three-agent and simplified harnesses producing full-stack
+          applications autonomously over multi-hour sessions.
+        </div>
+        <span class="source-tag">Primary source</span>
+      </div>
+    </li>
+
+    <li class="source-item">
+      <div class="source-num">02</div>
+      <div class="source-content">
+        <h4><a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents">Effective Harnesses for Long-Running Agents</a></h4>
+        <div class="source-meta">
+          <span class="author">Anthropic Engineering</span>
+          <span class="venue">Anthropic</span>
+          <span>November 2025</span>
+        </div>
+        <div class="source-desc">
+          The foundational two-agent pattern. Initializer + coding agent with structured handoffs across context windows.
+          Established the core insight that agents need persistent artifacts to bridge sessions &mdash;
+          the same principle Forge's communication artifacts build on.
+        </div>
+        <span class="source-tag">Foundation</span>
+      </div>
+    </li>
+
+    <li class="source-item">
+      <div class="source-num">03</div>
+      <div class="source-content">
+        <h4><a href="https://yoonholee.com/meta-harness/">Meta-Harness: End-to-End Optimization of Model Harnesses</a></h4>
+        <div class="source-meta">
+          <span class="author">Lee, Nair, Zhang, Lee, Khattab, Finn</span>
+          <span class="venue">Stanford / UW-Madison</span>
+          <span>2026</span>
+        </div>
+        <div class="source-desc">
+          Demonstrates that optimizing the harness itself produces larger quality gains than optimizing output alone.
+          Counterfactual diagnosis across execution traces. Informs Forge's trace archive convention and automated iteration protocol.
+        </div>
+        <span class="source-tag">Harness evolution</span>
+      </div>
+    </li>
+
+    <li class="source-item">
+      <div class="source-num">04</div>
+      <div class="source-content">
+        <h4><a href="https://www.anthropic.com/research/building-effective-agents">Building Effective Agents</a></h4>
+        <div class="source-meta">
+          <span class="author">Anthropic Research</span>
+          <span class="venue">Anthropic</span>
+          <span>2024</span>
+        </div>
+        <div class="source-desc">
+          The principle behind Forge's "simplify ruthlessly" step: find the simplest solution possible,
+          only increase complexity when needed. Every harness component must earn its keep.
+        </div>
+        <span class="source-tag">Design philosophy</span>
+      </div>
+    </li>
+
+    <li class="source-item">
+      <div class="source-num">05</div>
+      <div class="source-content">
+        <h4><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Effective Context Engineering for AI Agents</a></h4>
+        <div class="source-meta">
+          <span class="author">Anthropic Engineering</span>
+          <span class="venue">Anthropic</span>
+          <span>2025</span>
+        </div>
+        <div class="source-desc">
+          Context degradation research informing Forge's context management section. Why models lose coherence,
+          how "context anxiety" manifests, and the compaction vs. reset tradeoff.
+        </div>
+        <span class="source-tag">Context management</span>
+      </div>
+    </li>
+
+    <li class="source-item">
+      <div class="source-num">06</div>
+      <div class="source-content">
+        <h4><a href="https://en.wikipedia.org/wiki/Generative_adversarial_network">Generative Adversarial Networks</a></h4>
+        <div class="source-meta">
+          <span class="author">Goodfellow et al.</span>
+          <span class="venue">NeurIPS</span>
+          <span>2014</span>
+        </div>
+        <div class="source-desc">
+          The conceptual ancestor. Separating generation from discrimination creates a productive feedback loop &mdash;
+          the same structural insight that makes the generator-evaluator split work for agent quality.
+        </div>
+        <span class="source-tag">Conceptual inspiration</span>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer>
+  <div class="colophon">
+    <a href="https://github.com/omegalens/forge">GitHub</a> &middot;
+    <a href="https://github.com/anthropics/claude-code">Claude Code</a> &middot;
+    <code>/forge</code>
+  </div>
+  <div class="version">v1.0 &middot; April 2026</div>
+</footer>
+
+<script>
+// ═══════ SPARK PARTICLES ═══════
+const canvas = document.getElementById('spark-canvas');
+const ctx = canvas.getContext('2d');
+let sparks = [];
+let w, h;
+
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Spark {
+  constructor() {
+    this.reset();
+  }
+  reset() {
+    this.x = Math.random() * w * 0.3;
+    this.y = h + 10;
+    this.vx = Math.random() * 0.4 - 0.1;
+    this.vy = -(Math.random() * 0.8 + 0.2);
+    this.life = 1;
+    this.decay = Math.random() * 0.003 + 0.001;
+    this.size = Math.random() * 1.8 + 0.4;
+    this.hue = Math.random() * 30 + 15; // 15-45 orange range
+  }
+  update() {
+    this.x += this.vx;
+    this.vy -= 0.002; // slight upward acceleration
+    this.y += this.vy;
+    this.vx += (Math.random() - 0.5) * 0.05; // drift
+    this.life -= this.decay;
+    if (this.life <= 0) this.reset();
+  }
+  draw() {
+    const alpha = this.life * 0.4;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size * this.life, 0, Math.PI * 2);
+    ctx.fillStyle = `hsla(${this.hue}, 90%, 60%, ${alpha})`;
+    ctx.fill();
+    // glow
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size * this.life * 3, 0, Math.PI * 2);
+    ctx.fillStyle = `hsla(${this.hue}, 90%, 60%, ${alpha * 0.15})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 40; i++) {
+  const s = new Spark();
+  s.y = Math.random() * h; // spread initial positions
+  s.life = Math.random();
+  sparks.push(s);
+}
+
+function animate() {
+  ctx.clearRect(0, 0, w, h);
+  sparks.forEach(s => { s.update(); s.draw(); });
+  requestAnimationFrame(animate);
+}
+animate();
+
+// ═══════ SCROLL REVEAL ═══════
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+reveals.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

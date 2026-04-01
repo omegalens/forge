@@ -1,0 +1,23 @@
+{
+  "skill_name": "forge",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "I want to build a harness that takes a one-sentence product idea and autonomously builds a full-stack web app over several hours. The app should have a real backend, database, and polished frontend. How should I design this?",
+      "expected_output": "A detailed harness design with agent architecture, feature list format, context management strategy, and testing approach. Should recommend the three-agent pattern or similar multi-agent setup.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "I need a multi-agent system that generates brand identity packages — logos, color palettes, typography systems, and demo pages — and iterates until the quality is high. The output needs to feel like it came from a real design agency, not AI slop. How do I set this up?",
+      "expected_output": "A harness design centered on the generator-evaluator pattern with concrete grading criteria for design quality and originality. Should address the self-evaluation problem and include evaluator calibration guidance.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I want to improve how Claude handles code review on my PRs — should I build a harness for this?",
+      "expected_output": "Should recognize this doesn't need a full multi-agent harness. A single skill or well-crafted prompt is more appropriate. May suggest lightweight improvements without over-engineering.",
+      "files": []
+    }
+  ]
+}
